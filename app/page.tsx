@@ -5,6 +5,33 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [time, setTime] = useState({ d: "00", h: "00", m: "00", s: "00" });
 
+  // 🕒 Bi-weekly timer (auto timezone safe)
+  useEffect(() => {
+    const target = new Date();
+    target.setDate(target.getDate() + 14);
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      const diff = target.getTime() - now.getTime();
+
+      if (diff <= 0) return;
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+
+      setTime({
+        d: String(d).padStart(2, "0"),
+        h: String(h).padStart(2, "0"),
+        m: String(m).padStart(2, "0"),
+        s: String(s).padStart(2, "0"),
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const users = [
     { name: "SUTCHY", wager: 27500, prize: 225 },
     { name: "SHAJ", wager: 17500, prize: 100 },
@@ -18,132 +45,68 @@ export default function Home() {
     { name: "Player6", wager: 900, prize: 0 },
   ];
 
-  // 🔥 BI-WEEKLY TIMER (timezone safe)
-  useEffect(() => {
-    const start = new Date("2026-04-02T00:00:00Z"); // change start
-    const duration = 14 * 24 * 60 * 60 * 1000;
-
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const cycle = Math.floor((now - start.getTime()) / duration);
-      const end = start.getTime() + (cycle + 1) * duration;
-
-      const diff = end - now;
-
-      setTime({
-        d: String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, "0"),
-        h: String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, "0"),
-        m: String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, "0"),
-        s: String(Math.floor((diff / 1000) % 60)).padStart(2, "0"),
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div style={{ padding: 20, textAlign: "center" }}>
+    <div className="min-h-screen bg-black text-white flex flex-col items-center p-6">
 
       {/* TITLE */}
-      <h1 style={{ fontSize: 70, fontWeight: 800 }}>
+      <h1 className="text-5xl font-bold text-yellow-400 mb-2">
         $500 Leaderboard
       </h1>
 
-      <p style={{ opacity: 0.6 }}>Bi-Weekly Event</p>
+      <p className="opacity-60 mb-4">Bi-Weekly Event</p>
 
-      {/* CTA */}
-      <p style={{ marginTop: 10 }}>
-        Click to join 👉{" "}
-        <a
-          href="https://b.site/r/sutchyyy"
-          target="_blank"
-          className="glow-link"
-        >
-          BSITE
-        </a>
-      </p>
+      {/* CLICK CTA */}
+      <a
+        href="https://b.site/r/sutchyyy"
+        target="_blank"
+        className="text-yellow-400 font-semibold hover:underline mb-8"
+      >
+        Click to join BSite 🔥
+      </a>
 
       {/* TOP 3 */}
-      <div style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "end",
-        gap: 20,
-        marginTop: 50
-      }}>
-        {[1, 0, 2].map((i, idx) => {
-          const u = users[i];
-          const isFirst = i === 0;
-
-          return (
-            <div key={idx}
-              className={`glass ${isFirst ? "gold" : ""}`}
-              style={{
-                width: isFirst ? 260 : 200,
-                padding: 20,
-                borderRadius: 20,
-                transform: isFirst ? "scale(1.1)" : "scale(1)"
-              }}>
-              <h3>#{i + 1}</h3>
-              <p>{u.name}</p>
-
-              <h2 style={{ color: isFirst ? "gold" : "white" }}>
-                ${u.wager}
-              </h2>
-
-              {/* PRIZE */}
-              <p style={{ opacity: 0.7 }}>
-                Prize: ${u.prize}
-              </p>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* TIMER */}
-      <div style={{ marginTop: 50 }}>
-        <h3>TIME LEFT</h3>
-
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 10
-        }}>
-          {[time.d, time.h, time.m, time.s].map((t, i) => (
-            <div key={i}
-              className="glass"
-              style={{ padding: "15px 20px", borderRadius: 10 }}>
-              {t}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* TOP 10 */}
-      <div style={{
-        marginTop: 60,
-        maxWidth: 700,
-        marginInline: "auto"
-      }}>
-        {users.map((u, i) => (
-          <div key={i}
-            className="glass"
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: 15,
-              borderRadius: 12,
-              marginBottom: 10
-            }}>
-            <span>#{i + 1} {u.name}</span>
-            <span>${u.wager}</span>
-            <span style={{ opacity: 0.7 }}>
-              ${u.prize || "-"}
-            </span>
+      <div className="flex gap-6 mb-10">
+        {users.slice(0, 3).map((u, i) => (
+          <div
+            key={i}
+            className={`p-6 rounded-xl border ${
+              i === 0
+                ? "border-yellow-400 shadow-[0_0_30px_gold]"
+                : "border-gray-700"
+            }`}
+          >
+            <h2 className="text-lg">#{i + 1}</h2>
+            <p className="text-xl font-bold">{u.name}</p>
+            <p className="text-yellow-400">${u.wager}</p>
+            <p className="text-sm opacity-70">Prize: ${u.prize}</p>
           </div>
         ))}
       </div>
 
+      {/* TIMER */}
+      <div className="flex gap-4 mb-10">
+        {[time.d, time.h, time.m, time.s].map((t, i) => (
+          <div key={i} className="bg-gray-900 px-4 py-2 rounded">
+            {t}
+          </div>
+        ))}
+      </div>
+
+      {/* TOP 10 */}
+      <div className="w-full max-w-xl">
+        {users.map((u, i) => (
+          <div
+            key={i}
+            className="flex justify-between bg-gray-900 p-3 rounded mb-2"
+          >
+            <span>
+              #{i + 1} {u.name}
+            </span>
+            <span>${u.wager}</span>
+            <span className="text-yellow-400">${u.prize}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
