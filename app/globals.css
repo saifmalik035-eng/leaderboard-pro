@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #0b1220, #020617);
+  color: white;
+}
+
+/* glass */
+.glass {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* glow gold */
+.gold {
+  box-shadow: 0 0 40px rgba(255,215,0,0.5);
+}
+
+/* glowing link */
+.glow-link {
+  color: gold;
+  text-decoration: none;
+  font-weight: bold;
+}
+.glow-link:hover {
+  text-shadow: 0 0 10px gold;
+}
